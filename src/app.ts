@@ -1,19 +1,24 @@
 import express, { Application, ErrorRequestHandler, NextFunction, Request, Response} from 'express'
 import { Server } from 'http';
 import createHttpError from 'http-errors';
+import router from './routes/routes';
 
 const app : Application = express();
 const PORT: Number = Number(process.env.PORT) || 8001;
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World');
+    res.send('tastebook api is running...');
 });
+
+app.use(express.json());
+
+app.use('/api', router);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     next(new createHttpError.NotFound());
 })
 
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, req, res) => {
     res.status(err.status || 500);
     res.send({
         error: {
