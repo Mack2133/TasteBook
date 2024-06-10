@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { prisma } from "../models/prisma-client";
+import { createNewRecipe, deleteRecipeById, fetchAllRecipies, updateRecipeById } from "../repositories/recipeRepository";
 
 export const getAllRecipes = async (req: Request, res: Response) => {
     try {
-        const recipes = await prisma.recipe.findMany();
+        const recipes = await fetchAllRecipies();
         res.status(200).json({ 
             total: recipes.length,
             recipes: recipes
@@ -41,14 +42,7 @@ export const createRecipe = async (req: Request, res: Response) => {
             })
         }
 
-        const newRecipe = await prisma.recipe.create({
-            data: {
-                title,
-                description,
-                ingredients,
-                user: { connect: { id: userId } },
-            },
-        });
+        const newRecipe = createNewRecipe(title, description, ingredients, userId)
         res.status(201).json(newRecipe);
     } catch (error) {
         console.log(error);
@@ -71,14 +65,7 @@ export const updateRecipe = async (req: Request, res: Response) => {
             })
         }
 
-        const recipe = await prisma.recipe.update({
-            where: { id },
-            data: {
-                title,
-                description,
-                ingredients,
-            },
-        });
+        const recipe = updateRecipeById(id, title, description, ingredients);
 
         res.status(200).json(recipe);
     } catch (error) {
@@ -96,9 +83,7 @@ export const deleteRecipe = async (req: Request, res: Response) => {
             })
         }
 
-        const recipe = await prisma.recipe.delete({
-            where: { id },
-        });
+        const recipe = deleteRecipeById(id);
 
         res.status(200).json(recipe);
 

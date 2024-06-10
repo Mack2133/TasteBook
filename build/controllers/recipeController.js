@@ -10,69 +10,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const prisma_client_1 = require("../models/prisma-client");
+const racipeService_1 = require("../services/racipeService");
 const recipeRouter = (0, express_1.Router)();
 recipeRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const recipes = yield prisma_client_1.prisma.recipe.findMany();
-        res.status(200).json(recipes);
-    }
-    catch (error) {
-        console.log(error);
-    }
+    yield (0, racipeService_1.getAllRecipes)(req, res);
 }));
 recipeRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const recipe = yield prisma_client_1.prisma.recipe.findUnique({
-            where: {
-                id: (id)
-            }
-        });
-        res.status(200).json(recipe);
-    }
-    catch (error) {
-        console.log(error);
-    }
+    yield (0, racipeService_1.getRecipeById)(req, res);
 }));
-recipeRouter.post('/', (req, res) => {
-    try {
-        const { title, description, ingredients, userId } = req.body;
-        if (!title || !description || !ingredients || !userId) {
-            res.status(400).json({
-                message: 'Please provide title, description and ingredients'
-            });
-        }
-        const newRecipe = prisma_client_1.prisma.recipe.create({
-            data: {
-                title,
-                description,
-                ingredients,
-                user: { connect: { id: userId } }
-            }
-        });
-        res.status(201).json(newRecipe);
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
-recipeRouter.put('/:id', (req, res) => {
-    try {
-        const { id, title, description, ingredients } = req.body;
-        res.send(`Hello from recipe controller with id: ${req.params.id}`);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
-recipeRouter.delete('/:id', (req, res) => {
-    try {
-        res.send(`Hello from recipe controller with id: ${req.params.id}`);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
+recipeRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, racipeService_1.createRecipe)(req, res);
+}));
+recipeRouter.put('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, racipeService_1.updateRecipe)(req, res);
+}));
+recipeRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, racipeService_1.deleteRecipe)(req, res);
+}));
 exports.default = recipeRouter;

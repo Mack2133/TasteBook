@@ -1,15 +1,21 @@
 import { Request, Response } from "express";
-import { prisma } from "../models/prisma-client";
+import { 
+    fetchAllRatings, 
+    fetchRatingById, 
+    createNewRating, 
+    updateRatingById, 
+    deleteRatingById 
+} from "../repositories/ratingRepository";
 
 export const getAllRatings = async (req: Request, res: Response) => {
     try {
-        const ratings = await prisma.rating.findMany();
+        const ratings = await fetchAllRatings();
         res.status(200).json({ 
             total: ratings.length,
             ratings: ratings
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
@@ -17,9 +23,7 @@ export const getAllRatings = async (req: Request, res: Response) => {
 export const getRatingById = async (req: Request, res: Response) => {
     try {
         const id = req.params.id;
-        const rating = await prisma.rating.findUnique({
-            where: { id },
-        });
+        const rating = await fetchRatingById(id);
 
         if (!rating) {
             return res.status(404).json({ message: 'Rating not found' });
@@ -27,59 +31,43 @@ export const getRatingById = async (req: Request, res: Response) => {
 
         res.status(200).json(rating);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
 
 export const createRating = async (req: Request, res: Response) => {
     try {
-        const {value, userId} = req.body;
-        if(!value || !userId){
-            res.status(400).json({
-                message: 'Please a value, userId'
-            })
+        const { value, userId, recipeId } = req.body;
+
+        if (value === undefined || !userId || !recipeId) {
+            return res.status(400).json({ message: 'Please provide value, userId, and recipeId' });
         }
 
-        const newRating = await prisma.rating.create({
-            data: {
-                value: value,
-                recipe: { connect: { id: userId } },
-                user: { connect: { id: userId } },
-            },
-        });
+        const newRating = await createNewRating(value, userId, recipeId);
         res.status(201).json(newRating);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
 
 export const updateRating = async (req: Request, res: Response) => {
     try {
-        const {value, userId} = req.body;
+        const { value } = req.body;
         const { id } = req.params;
-        if(!id){
-            res.status(400).json({
-                message: 'Please provide id'
-            })
+
+        if (!id) {
+            return res.status(400).json({ message: 'Please provide id' });
         }
-        if(!value && !userId){
-            res.status(400).json({
-                message: 'Please provide value or userId'
-            })
+        if (value === undefined) {
+            return res.status(400).json({ message: 'Please provide value' });
         }
 
-        const rating = await prisma.rating.update({
-            where: { id },
-            data: {
-                value: value
-            },
-        });
-
+        const rating = await updateRatingById(id, value);
         res.status(200).json(rating);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
@@ -87,20 +75,15 @@ export const updateRating = async (req: Request, res: Response) => {
 export const deleteRating = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+
         if (!id) {
-            return res.status(400).json({
-                message: 'Please provide id'
-            })
+            return res.status(400).json({ message: 'Please provide id' });
         }
 
-        const rating = await prisma.rating.delete({
-            where: { id },
-        });
-
+        const rating = await deleteRatingById(id);
         res.status(200).json(rating);
-
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
