@@ -24,7 +24,7 @@ model Recipe {
   description String    @default("")
   ingredients String[]  @default([])
   userId      String    
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   ratings     Rating[]
   comments    Comment[]
@@ -35,8 +35,8 @@ model Rating {
   value     Int      @default(0)
   recipeId  String
   userId    String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
@@ -45,8 +45,8 @@ model Comment {
   content   String
   recipeId  String
   userId    String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 

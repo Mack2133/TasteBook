@@ -4,8 +4,11 @@ import {
     fetchUserById,
     createNewUser,
     updateUserById,
-    deleteUserById
+    deleteUserById,
+    checkEmailExist,
 } from "../repositories/userRepository";
+import { loginValidation, registerValidation } from "../validation";
+import bcrypt from "bcryptjs";
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -36,21 +39,51 @@ export const getUserById = async (req: Request, res: Response) => {
     }
 }
 
-export const createUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response) => {
     try {
-        const { name, email, password } = req.body;
-        if (!name || !email || !password) {
-            return res.status(400).json({
-                message: 'Please provide name, email, and password'
-            });
+        const { name, email, password, repeat_password } = req.body;
+
+        const { error } = registerValidation(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
         }
 
-        const newUser = await createNewUser(name, email, password);
-        res.status(201).json(newUser);
+        if (await checkEmailExist(email)) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const newUser = await createNewUser(name, email, hashedPassword);
+        res.status(201).json({
+            status: 'User created successfully',
+            user_id: newUser.id,
+            name: newUser.name,
+            email: newUser.email
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
+}
+
+export const loginUser = async (req: Request, res: Response) => {
+
+    const { error } = loginValidation(req.body);
+        const { email, password } = req.body;    
+
+        if (error) return res.status(400).json({ message: error.details[0].message }) 
+
+        // Check if email exist
+        const emailExist = await checkEmailExist(email);
+        if(!emailExist) return res.status(400).json({ message: 'Email or password is wrong' })
+
+        // Check if password is correct
+        const validPassword = await bcrypt.compare(password, emailExist.password);
+        if(!validPassword) return res.status(400).json({ message: 'Email or password is wrong' })
+
+        res.status(200).json({ message: 'Login successful' });
 }
 
 export const updateUser = async (req: Request, res: Response) => {

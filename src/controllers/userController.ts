@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, deleteUser, getAllUsers, getUserById, updateUser } from "../services/userService";
+import { deleteUser, getAllUsers, getUserById, loginUser, registerUser, updateUser } from "../services/userService";
 
 const userRouter = Router();
 
@@ -11,10 +11,13 @@ userRouter.get('/:id', async (req, res) => {
     await getUserById(req, res);
 })
 
-userRouter.post('/', async (req, res) => {
-    await createUser(req, res);
+userRouter.post('/register', async (req, res) => {
+    await registerUser(req, res);
 })
 
+userRouter.post('/login', async (req, res) => {
+    await loginUser(req, res);
+})
 
 userRouter.put('/:id', async (req, res) => {
     await updateUser(req, res);
