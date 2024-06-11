@@ -92,3 +92,35 @@ export const deleteRecipe = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
+export const searchRecipes = async (req: Request, res: Response) => {
+    try {
+        const { title } = req.query;
+        if (!title) {
+            return res.status(400).json({
+                message: 'Please provide title'
+            })
+        }
+
+        const recipes = await prisma.recipe.findMany({
+            where: {
+                title: {
+                    contains: title.toString()
+                }
+            }
+        })
+
+        if (recipes.length === 0) {
+            return res.status(404).json({ message: 'Recipe not found' });
+        }
+
+        res.status(200).json({
+            total: recipes.length,
+            recipes: recipes
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};

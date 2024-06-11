@@ -6,9 +6,10 @@ import userRouter from "../controllers/userController";
 
 const router = Router();
 
-router.use('/recipes', recipeRouter);
-router.use('/users', userRouter);
-router.use('/ratings', ratingRouter);
-router.use('/comments', commentRouter);
+router.use('/ratings',ratingRouter);
+router.use('/comments',commentRouter);
+router.use('/recipies',recipeRouter);
+router.use('/search',recipeRouter);
+router.use('/users',userRouter);
 
 export default router;

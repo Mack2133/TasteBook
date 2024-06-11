@@ -13,4 +13,5 @@ router.use('/recipes', recipeController_1.default);
 router.use('/users', userController_1.default);
 router.use('/ratings', reviewController_1.default);
 router.use('/comments', commetController_1.default);
+router.use('/search', recipeController_1.default);
 exports.default = router;

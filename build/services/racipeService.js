@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteRecipe = exports.updateRecipe = exports.createRecipe = exports.getRecipeById = exports.getAllRecipes = void 0;
+exports.searchRecipes = exports.deleteRecipe = exports.updateRecipe = exports.createRecipe = exports.getRecipeById = exports.getAllRecipes = void 0;
 const prisma_client_1 = require("../models/prisma-client");
 const recipeRepository_1 = require("../repositories/recipeRepository");
 const getAllRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -100,3 +100,35 @@ const deleteRecipe = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.deleteRecipe = deleteRecipe;
+const searchRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { title } = req.query;
+        if (!title) {
+            return res.status(400).json({
+                message: 'Please provide title'
+            });
+        }
+        try {
+            const recipes = yield prisma_client_1.prisma.recipe.findMany({
+                where: {
+                    title: {
+                        contains: title.toString()
+                    }
+                }
+            });
+            res.status(200).json({
+                total: recipes.length,
+                recipes: recipes
+            });
+        }
+        catch (error) {
+            console.log(error);
+            res.status(404).json({ message: 'recipe not found' });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+exports.searchRecipes = searchRecipes;

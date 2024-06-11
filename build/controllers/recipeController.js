@@ -15,6 +15,9 @@ const recipeRouter = (0, express_1.Router)();
 recipeRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, racipeService_1.getAllRecipes)(req, res);
 }));
+recipeRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, racipeService_1.searchRecipes)(req, res);
+}));
 recipeRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, racipeService_1.getRecipeById)(req, res);
 }));
