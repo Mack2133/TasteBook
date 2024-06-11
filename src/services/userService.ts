@@ -9,6 +9,7 @@ import {
 } from "../repositories/userRepository";
 import { loginValidation, registerValidation } from "../validation";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -76,12 +77,15 @@ export const loginUser = async (req: Request, res: Response) => {
         if (error) return res.status(400).json({ message: error.details[0].message }) 
 
         // Check if email exist
-        const emailExist = await checkEmailExist(email);
-        if(!emailExist) return res.status(400).json({ message: 'Email or password is wrong' })
+        const user = await checkEmailExist(email);
+        if(!user) return res.status(400).json({ message: 'Email or password is wrong' })
 
         // Check if password is correct
-        const validPassword = await bcrypt.compare(password, emailExist.password);
+        const validPassword = await bcrypt.compare(password, user.password);
         if(!validPassword) return res.status(400).json({ message: 'Email or password is wrong' })
+
+        const token = jwt.sign({_id: user.id}, process.env.TOKEN_SECRET as string);
+        res.header('auth-token', token).send({ token });
 
         res.status(200).json({ message: 'Login successful' });
 }

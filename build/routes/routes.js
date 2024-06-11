@@ -8,10 +8,11 @@ const commetController_1 = __importDefault(require("../controllers/commetControl
 const recipeController_1 = __importDefault(require("../controllers/recipeController"));
 const reviewController_1 = __importDefault(require("../controllers/reviewController"));
 const userController_1 = __importDefault(require("../controllers/userController"));
+const verifyToken_1 = require("../middlewares/verifyToken");
 const router = (0, express_1.Router)();
-router.use('/recipes', recipeController_1.default);
-router.use('/users', userController_1.default);
-router.use('/ratings', reviewController_1.default);
-router.use('/comments', commetController_1.default);
-router.use('/search', recipeController_1.default);
+router.use('/ratings', verifyToken_1.authVerify, reviewController_1.default);
+router.use('/comments', verifyToken_1.authVerify, commetController_1.default);
+router.use('/recipies', verifyToken_1.authVerify, recipeController_1.default);
+router.use('/search', verifyToken_1.authVerify, recipeController_1.default);
+router.use('/users', verifyToken_1.authVerify, userController_1.default);
 exports.default = router;

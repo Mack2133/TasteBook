@@ -108,23 +108,20 @@ const searchRecipes = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 message: 'Please provide title'
             });
         }
-        try {
-            const recipes = yield prisma_client_1.prisma.recipe.findMany({
-                where: {
-                    title: {
-                        contains: title.toString()
-                    }
+        const recipes = yield prisma_client_1.prisma.recipe.findMany({
+            where: {
+                title: {
+                    contains: title.toString()
                 }
-            });
-            res.status(200).json({
-                total: recipes.length,
-                recipes: recipes
-            });
+            }
+        });
+        if (recipes.length === 0) {
+            return res.status(404).json({ message: 'Recipe not found' });
         }
-        catch (error) {
-            console.log(error);
-            res.status(404).json({ message: 'recipe not found' });
-        }
+        res.status(200).json({
+            total: recipes.length,
+            recipes: recipes
+        });
     }
     catch (error) {
         console.log(error);

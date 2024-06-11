@@ -18,8 +18,11 @@ userRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 userRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, userService_1.getUserById)(req, res);
 }));
-userRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, userService_1.createUser)(req, res);
+userRouter.post('/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, userService_1.registerUser)(req, res);
+}));
+userRouter.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, userService_1.loginUser)(req, res);
 }));
 userRouter.put('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, userService_1.updateUser)(req, res);

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserById = exports.updateUserById = exports.createNewUser = exports.fetchUserById = exports.fetchAllUsers = void 0;
+exports.checkIdExist = exports.checkEmailExist = exports.deleteUserById = exports.updateUserById = exports.createNewUser = exports.fetchUserById = exports.fetchAllUsers = void 0;
 const prisma_client_1 = require("../models/prisma-client");
 const fetchAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield prisma_client_1.prisma.user.findMany();
@@ -22,13 +22,18 @@ const fetchUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.fetchUserById = fetchUserById;
 const createNewUser = (name, email, password) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_client_1.prisma.user.create({
-        data: {
-            name,
-            email,
-            password,
-        }
-    });
+    try {
+        return yield prisma_client_1.prisma.user.create({
+            data: {
+                name,
+                email,
+                password,
+            },
+        });
+    }
+    catch (error) {
+        throw new Error("Error creating user");
+    }
 });
 exports.createNewUser = createNewUser;
 const updateUserById = (id, name, email, password) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,3 +53,13 @@ const deleteUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.deleteUserById = deleteUserById;
+const checkEmailExist = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield prisma_client_1.prisma.user.findUnique({ where: { email } });
+    return user;
+});
+exports.checkEmailExist = checkEmailExist;
+const checkIdExist = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield prisma_client_1.prisma.user.findUnique({ where: { id } });
+    return user;
+});
+exports.checkIdExist = checkIdExist;
