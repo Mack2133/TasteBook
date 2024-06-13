@@ -6,14 +6,18 @@ interface UserRequest extends Request {
 }
 
 export const authVerify = (req: UserRequest, res: Response, next: NextFunction) => {
-    const token = req.header('auth-token');
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
     if (!token) return res.status(401).json({ message: 'Access Denied' });
 
     try {
-        const verified = Jwt.verify(token, process.env.TOKEN_SECRET as string);
-        req.user = verified;
-        next(); // Call next() to proceed to the next middleware
+        Jwt.verify(token, process.env.TOKEN_SECRET as string, (err: any, user: any) => {
+            if (err) return res.status(403).json({ message: 'Invalid Token' });
+            req.user = user;
+            next();
+        })
     } catch (error) {
-        res.status(400).json({ message: 'Invalid Token' });
+        
     }
 };

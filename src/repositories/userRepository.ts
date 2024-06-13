@@ -2,22 +2,26 @@ import { prisma } from "../models/prisma-client";
 import { User } from '@prisma/client';
 
 export const fetchAllUsers = async (): Promise<User[]> => {
-    return await prisma.user.findMany();
+    return await prisma.user.findMany({
+        include: { recipes: true, comments: true},
+    });
 }
 
 export const fetchUserById = async (id: string): Promise<User | null> => {
     return await prisma.user.findUnique({
         where: { id },
+        include: { recipes: true, comments: true},
     });
 }
 
-export const createNewUser = async (name: string, email: string, password: string): Promise<User> => {
+export const createNewUser = async (name: string, email: string, password: string, imageUrl: string): Promise<User> => {
     try {
         return await prisma.user.create({
             data: {
                 name,
                 email,
                 password,
+                imageUrl,
             },
         });
     } catch (error) {

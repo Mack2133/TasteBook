@@ -38,11 +38,11 @@ export const getCommentById = async (req: Request, res: Response) => {
 
 export const createComment = async (req: Request, res: Response) => {
     try {
-        const { content, userId } = req.body;
-        const { id: recipeId } = req.params;
+        const { content, userId, recipeId } = req.body;
+        // const { id: recipeId } = req.params;
 
         if (!content || !userId || !recipeId) {
-            return res.status(400).json({ message: 'Please provide content, userId, and recipeId' });
+            return res.status(400).json({ message: 'Please provide content, and recipeId' });
         }
 
         const newComment = await createNewComment(content, userId, recipeId);

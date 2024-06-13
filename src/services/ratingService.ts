@@ -38,7 +38,7 @@ export const getRatingById = async (req: Request, res: Response) => {
 
 export const createRating = async (req: Request, res: Response) => {
     try {
-        const { value, userId, recipeId } = req.body;
+        const { value, userId, recipeId, imageUrl } = req.body;
 
         if (value === undefined || !userId || !recipeId) {
             return res.status(400).json({ message: 'Please provide value, userId, and recipeId' });

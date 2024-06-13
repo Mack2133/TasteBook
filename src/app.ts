@@ -2,9 +2,16 @@ import express, { Application, ErrorRequestHandler, NextFunction, Request, Respo
 import { Server } from 'http';
 import createHttpError from 'http-errors';
 import router from './routes/routes';
+import cors from 'cors';
 
 const app : Application = express();
 const PORT: Number = Number(process.env.PORT) || 8001;
+
+const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,
+}
+app.use(cors(corsOptions));
 
 app.get('/', (req: Request, res: Response) => {
     res.send('tastebook api is running...');

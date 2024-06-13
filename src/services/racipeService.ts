@@ -35,14 +35,14 @@ export const getRecipeById = async (req: Request, res: Response) => {
 
 export const createRecipe = async (req: Request, res: Response) => {
     try {
-        const {title, description, ingredients, userId} = req.body;
+        const {title, description, ingredients, userId, imageUrl} = req.body;
         if(!title || !description || !ingredients || !userId){
-            res.status(400).json({
-                message: 'Please provide title, description and ingredients'
+            return res.status(400).json({
+                message: 'Please provide title, description, ingredients and userId'
             })
         }
 
-        const newRecipe = createNewRecipe(title, description, ingredients, userId)
+        const newRecipe = createNewRecipe(title, description, ingredients, userId, imageUrl);
         res.status(201).json(newRecipe);
     } catch (error) {
         console.log(error);
@@ -52,7 +52,7 @@ export const createRecipe = async (req: Request, res: Response) => {
 
 export const updateRecipe = async (req: Request, res: Response) => {
     try {
-        const {title, description, ingredients} = req.body;
+        const {title, description, ingredients, imageUrl} = req.body;
         const { id } = req.params;
         if(!id){
             res.status(400).json({
@@ -65,7 +65,7 @@ export const updateRecipe = async (req: Request, res: Response) => {
             })
         }
 
-        const recipe = updateRecipeById(id, title, description, ingredients);
+        const recipe = updateRecipeById(id, title, description, ingredients, imageUrl);
 
         res.status(200).json(recipe);
     } catch (error) {

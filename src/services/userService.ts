@@ -42,7 +42,7 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const registerUser = async (req: Request, res: Response) => {
     try {
-        const { name, email, password, repeat_password } = req.body;
+        const { name, email, password, imageUrl } = req.body;
 
         const { error } = registerValidation(req.body);
         if (error) {
@@ -56,12 +56,13 @@ export const registerUser = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = await createNewUser(name, email, hashedPassword);
+        const newUser = await createNewUser(name, email, hashedPassword, imageUrl);
         res.status(201).json({
             status: 'User created successfully',
             user_id: newUser.id,
             name: newUser.name,
-            email: newUser.email
+            email: newUser.email,
+            imageUrl: newUser.imageUrl,
         });
     } catch (error) {
         console.log(error);
@@ -72,22 +73,18 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
 
     const { error } = loginValidation(req.body);
-        const { email, password } = req.body;    
+    const { email, password } = req.body;    
 
-        if (error) return res.status(400).json({ message: error.details[0].message }) 
+    if (error) return res.status(400).json({ message: error.details[0].message }) 
 
-        // Check if email exist
-        const user = await checkEmailExist(email);
-        if(!user) return res.status(400).json({ message: 'Email or password is wrong' })
+    const user = await checkEmailExist(email);
+    if(!user) return res.status(400).json({ message: 'Email or password is wrong' })
 
-        // Check if password is correct
-        const validPassword = await bcrypt.compare(password, user.password);
-        if(!validPassword) return res.status(400).json({ message: 'Email or password is wrong' })
+    const validPassword = await bcrypt.compare(password, user.password);
+    if(!validPassword) return res.status(400).json({ message: 'Email or password is wrong' })
 
-        const token = jwt.sign({_id: user.id}, process.env.TOKEN_SECRET as string);
-        res.header('auth-token', token).send({ token });
-
-        res.status(200).json({ message: 'Login successful' });
+    const token = jwt.sign({user}, process.env.TOKEN_SECRET as string, {expiresIn: '1h'});
+    res.json({accessToken: token})
 }
 
 export const updateUser = async (req: Request, res: Response) => {

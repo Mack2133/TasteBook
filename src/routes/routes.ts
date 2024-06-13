@@ -10,7 +10,7 @@ const router = Router();
 
 router.use('/ratings',authVerify,ratingRouter);
 router.use('/comments',authVerify,commentRouter);
-router.use('/recipies',authVerify,recipeRouter);
+router.use('/recipes',authVerify,recipeRouter);
 router.use('/search',authVerify,recipeRouter);
 router.use('/users',userRouter);
 

@@ -12,6 +12,7 @@ model User {
   email     String    @unique
   name      String?
   password  String
+  imageUrl  String    @default("")
   createdAt DateTime  @default(now())
   recipes   Recipe[]
   ratings   Rating[]
@@ -21,6 +22,7 @@ model User {
 model Recipe {
   id          String    @id @unique @default(cuid())
   title       String
+  imageUrl    String    @default("")
   description String    @default("")
   ingredients String[]  @default([])
   userId      String    
